@@ -7,7 +7,7 @@ properties() { '
 kernel.string=Evasi0nKernel
 do.devicecheck=1
 do.modules=0
-do.systemless=1
+do.systemless=0
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=cepheus
@@ -15,13 +15,13 @@ device.name2=Cepheus
 device.name3=cepheus-user
 device.name4=Mi 9
 device.name5=Mi9
-supported.versions=11
+supported.versions=12
 supported.patchlevels=
 '; } # end properties
 
 # shell variables
-block=/dev/block/bootdevice/by-name/boot;
-is_slot_device=0;
+block=auto;
+is_slot_device=auto;
 ramdisk_compression=auto;
 
 
@@ -31,7 +31,7 @@ ramdisk_compression=auto;
 
 
 ## AnyKernel install
-dump_boot;
+split_boot;
 
 ## Screen OC
 patch_cmdline "msm_drm.framerate_override" "msm_drm.framerate_override=1"
@@ -44,5 +44,8 @@ fr=$(cat /sdcard/framerate_override | tr -cd "[0-9]");
 rm /sdcard/framerate_override
 
 write_boot;
+mv $home/rd-new.cpio $home/ramdisk-new.cpio
+
+flash_boot;
 ## end install
 

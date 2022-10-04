@@ -1,4 +1,4 @@
-/* Copyright (c)2017-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c)2017-2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -388,6 +388,7 @@ static struct a6xx_protected_regs {
 	{ 0x8D0, 0x23, 0 },
 	{ 0x980, 0x4, 0 },
 	{ 0xA630, 0x0, 1 },
+	{ 0x1b400, 0x1fff, 1 },
 };
 
 /* IFPC & Preemption static powerup restore list */
@@ -1211,7 +1212,7 @@ static int a6xx_post_start(struct adreno_device *adreno_dev)
 
 	rb->_wptr = rb->_wptr - (42 - (cmds - start));
 
-	ret = adreno_ringbuffer_submit_spin(rb, NULL, 2000);
+	ret = adreno_ringbuffer_submit_spin_nosync(rb, NULL, 2000);
 	if (ret)
 		adreno_spin_idle_debug(adreno_dev,
 			"hw preemption initialization failed to idle\n");
@@ -1357,7 +1358,7 @@ static int _load_firmware(struct kgsl_device *device, const char *fwfile,
 	if (!ret) {
 		memcpy(firmware->memdesc.hostptr, &fw->data[4], fw->size - 4);
 		firmware->size = (fw->size - 4) / sizeof(uint32_t);
-		firmware->version = *(unsigned int *)&fw->data[4];
+		firmware->version = adreno_get_ucode_version((u32 *)fw->data);
 	}
 
 	release_firmware(fw);

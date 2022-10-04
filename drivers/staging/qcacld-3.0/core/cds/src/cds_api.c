@@ -460,6 +460,7 @@ static void cds_cdp_cfg_attach(struct wlan_objmgr_psoc *psoc)
 		cfg_get(psoc, CFG_DP_CE_CLASSIFY_ENABLE);
 	cdp_cfg.tso_enable = cfg_get(psoc, CFG_DP_TSO);
 	cdp_cfg.lro_enable = cfg_get(psoc, CFG_DP_LRO);
+	cdp_cfg.sg_enable = cfg_get(psoc, CFG_DP_SG);
 	cdp_cfg.enable_data_stall_detection =
 		cfg_get(psoc, CFG_DP_ENABLE_DATA_STALL_DETECTION);
 	cdp_cfg.gro_enable = cfg_get(psoc, CFG_DP_GRO);
@@ -607,11 +608,17 @@ static int cds_hang_event_notifier_call(struct notifier_block *block,
 
 	cmd->recovery_reason = gp_cds_context->recovery_reason;
 
+	/* userspace expects a fixed format */
+	qdf_mem_set(&cmd->driver_version, DRIVER_VER_LEN, ' ');
 	qdf_mem_copy(&cmd->driver_version, QWLAN_VERSIONSTR,
-		     DRIVER_VER_LEN);
+		     qdf_min(sizeof(QWLAN_VERSIONSTR) - 1,
+			     (size_t)DRIVER_VER_LEN));
 
+	/* userspace expects a fixed format */
+	qdf_mem_set(&cmd->hang_event_version, HANG_EVENT_VER_LEN, ' ');
 	qdf_mem_copy(&cmd->hang_event_version, QDF_HANG_EVENT_VERSION,
-		     HANG_EVENT_VER_LEN);
+		     qdf_min(sizeof(QDF_HANG_EVENT_VERSION) - 1,
+			     (size_t)HANG_EVENT_VER_LEN));
 
 	cds_hang_data->offset += total_len;
 	return NOTIFY_OK;

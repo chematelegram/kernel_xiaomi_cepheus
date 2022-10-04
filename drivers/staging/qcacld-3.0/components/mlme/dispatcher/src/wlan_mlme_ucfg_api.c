@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018-2020 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -1537,21 +1538,29 @@ ucfg_mlme_get_mws_coex_scc_channel_avoid_delay(struct wlan_objmgr_psoc *psoc,
 #endif
 
 QDF_STATUS
-ucfg_mlme_get_etsi13_srd_chan_in_master_mode(struct wlan_objmgr_psoc *psoc,
-					     bool *value)
+ucfg_mlme_get_etsi_srd_chan_in_master_mode(struct wlan_objmgr_psoc *psoc,
+					   uint8_t *value)
 {
 	struct wlan_mlme_psoc_ext_obj *mlme_obj;
 
 	mlme_obj = mlme_get_psoc_ext_obj(psoc);
 	if (!mlme_obj) {
-		*value = cfg_default(CFG_ETSI13_SRD_CHAN_IN_MASTER_MODE);
+		*value = cfg_default(CFG_ETSI_SRD_CHAN_IN_MASTER_MODE);
 		mlme_legacy_err("Failed to get MLME Obj");
 		return QDF_STATUS_E_INVAL;
 	}
 
-	*value = mlme_obj->cfg.reg.etsi13_srd_chan_in_master_mode;
+	*value = mlme_obj->cfg.reg.etsi_srd_chan_in_master_mode;
 
 	return QDF_STATUS_SUCCESS;
+}
+
+QDF_STATUS
+ucfg_mlme_get_srd_master_mode_for_vdev(struct wlan_objmgr_psoc *psoc,
+				       enum QDF_OPMODE vdev_opmode,
+				       bool *value)
+{
+	return wlan_mlme_get_srd_master_mode_for_vdev(psoc, vdev_opmode, value);
 }
 
 #ifdef SAP_AVOID_ACS_FREQ_LIST
@@ -1771,6 +1780,21 @@ ucfg_mlme_set_obss_detection_offload_enabled(struct wlan_objmgr_psoc *psoc,
 		return QDF_STATUS_E_INVAL;
 
 	mlme_obj->cfg.obss_ht40.obss_detection_offload_enabled = value;
+
+	return QDF_STATUS_SUCCESS;
+}
+
+QDF_STATUS
+ucfg_mlme_set_bss_color_collision_det_sta(struct wlan_objmgr_psoc *psoc,
+					  uint8_t value)
+{
+	struct wlan_mlme_psoc_ext_obj *mlme_obj;
+
+	mlme_obj = mlme_get_psoc_ext_obj(psoc);
+	if (!mlme_obj)
+		return QDF_STATUS_E_INVAL;
+
+	mlme_obj->cfg.obss_ht40.bss_color_collision_det_sta = value;
 
 	return QDF_STATUS_SUCCESS;
 }
