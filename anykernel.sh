@@ -43,9 +43,7 @@ fr=$(cat /sdcard/framerate_override | tr -cd "[0-9]");
 [ $fr -eq 75 ] && ui_print "   Setting 75 Hz refresh rate" && patch_cmdline "msm_drm.framerate_override" "msm_drm.framerate_override=5"
 rm /sdcard/framerate_override
 
-write_boot;
 mv $home/rd-new.cpio $home/ramdisk-new.cpio
 
 flash_boot;
 ## end install
-
