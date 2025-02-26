@@ -2,3 +2,8 @@
 	path = KernelSU-Next
 	url = https://github.com/rifsxd/KernelSU-Next.git
 	branch = next-susfs
+
+[submodule "AnyKernel3"]
+        path = AnyKernel3
+        url = https://github.com/raystef66/AnyKernel.git
+        branch = cepheus
